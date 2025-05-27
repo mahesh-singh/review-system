@@ -150,11 +150,11 @@ func (s *JSONLProcessingService) ProcessJSONLFile(
 	processedFile.Status = status
 
 	if err := s.models.ProcessedFiles.Update(processedFile); err != nil {
-		log.Printf("Warning: Failed to update processed file record: %v", err)
+		s.logger.Error("warning: Failed to update processed file record", slog.String("error", err.Error()))
 	}
 
-	log.Printf("Processing completed for %s: %d total, %d success, %d errors in %v",
-		filename, result.TotalRecords, result.SuccessRecords, result.ErrorRecords, result.Duration)
+	s.logger.Error(fmt.Errorf("processing completed for %s: %d total, %d success, %d errors in %v",
+		filename, result.TotalRecords, result.SuccessRecords, result.ErrorRecords, result.Duration).Error())
 
 	return result, nil
 }

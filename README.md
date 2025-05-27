@@ -1,23 +1,34 @@
 # Review System
 
+## Prerequisites 
+- Docker
+- Go 1.23.0
 
-# TO DO
-- [X] Connect to postgresql 
-- [X] Setup migration
-- [X] Create table to store the process file detail
-- [X] Connect to S3
-- [X] Get the file details from s3 
-- [X] save the file detail in process_files
-- [] Fix the logger
-- [] glue s3 client and services code 
-- [] call main to execute the flow 
-- [] write basic tests 
-- [] Upload real data on s3
+## Steps to Run
+1. Configure AWS 
+   1. Using machine default aws profile 
+   2. modify .env file
+      1. `BUCKET`
+      2. `AWS_REGION`
+      3. 
+2. Run the DB container and run the DB migration 
+   1. `make docker/up`
+
+3. Run the application
+   1. `make run/review` 
 
 
-Questions
-- Why ListObjectsV2
+## Architecture 
+- `cmd/review-system` entry point
+- `internal/data` DB model
+- `internal/s3` S3 client 
+- `internal/service/jsonl_processing/service.go` Main login to import files 
+  - `ProcessMultipleFiles` is an entry point 
 
-Validation 
- - https://claude.ai/chat/b7e2fd79-be9e-4b8b-b346-fe5744d5a3f5
- - Main implementation  - https://claude.ai/chat/b371f7a7-74b7-484f-b6b9-32ce3a6cac2a
+
+## Note
+- I have taken LLM help to generate few code and discuss few ideas. 
+- Didn't added test, due to to lack of time 
+- More detail validation can be added
+
+

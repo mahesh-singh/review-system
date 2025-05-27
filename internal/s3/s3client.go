@@ -95,7 +95,7 @@ func (s *S3FileReader) GetReader(ctx context.Context, s3Path string) (io.ReadClo
 
 	result, err := s.client.s3Client.GetObject(ctx, input)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get object %s from bucket %s: %w", key, bucket, err)
+		return nil, fmt.Errorf("failed to get object %s from bucket %s: %w, ", key, bucket, err)
 	}
 
 	return result.Body, nil

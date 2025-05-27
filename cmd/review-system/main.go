@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"flag"
 	"fmt"
 	"log/slog"
 	"os"
@@ -17,12 +18,13 @@ import (
 type appConfig struct {
 	env string
 	db  struct {
-		dns string
+		dsn string
 	}
 	aws struct {
 		region    string
 		accessKey string
 		secretKey string
+		s3bucket  string
 	}
 }
 
@@ -33,13 +35,23 @@ type application struct {
 }
 
 func main() {
-	var config appConfig
 
-	config.db.dns = "postgres://review:pa55word@localhost:5432/review?sslmode=disable"
+	var cfg appConfig
+
+	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
+
+	flag.StringVar(&cfg.db.dsn, "db-dsn", "postgres://review:pa55word@localhost:5432/review?sslmode=disable", "PostgreSQL DSN")
+
+	flag.StringVar(&cfg.aws.region, "aws-region", "ap-southeast-2", "AWS Region")
+	flag.StringVar(&cfg.aws.s3bucket, "s3-bucket", "zuzuhotelreview1", "S3 Bucket name")
+	flag.StringVar(&cfg.aws.accessKey, "aws-access-key", "", "AWS Access Key")
+	flag.StringVar(&cfg.aws.secretKey, "aws-secret-key", "", "AWS Secret Key")
+
+	flag.Parse()
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	db, err := openDB(&config)
+	db, err := openDB(&cfg)
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
@@ -49,20 +61,18 @@ func main() {
 	defer db.Close()
 
 	app := &application{
-		config: config,
+		config: cfg,
 		logger: logger,
 		models: data.NewModels(db),
 	}
 
-	config.aws.region = "ap-southeast-2"
-
-	s3client, err := s3.NewClient(config.aws.region)
+	s3client, err := s3.NewClient(cfg.aws.region)
 
 	if err != nil {
 		app.logger.Error("error in connecting aws S3", err)
 	}
 
-	files, err := s3client.ListFiles(context.Background(), "zuzuhotelreview1", "")
+	files, err := s3client.ListFiles(context.Background(), cfg.aws.s3bucket, "")
 	if err != nil {
 		app.logger.Error("error while listing the file")
 		app.logger.Error(err.Error())
@@ -72,20 +82,10 @@ func main() {
 
 	s3FileReader := s3.NewS3FileReader(s3client)
 
-	for _, file := range files {
-		reader, err := s3FileReader.GetReader(context.Background(), file.S3Path)
-		if err != nil {
-			app.logger.Error("error in reading the file", slog.String("s3path", file.S3Path))
-			app.logger.Error(err.Error())
-		}
-
-		fmt.Print(reader)
-	}
-
 	processing_result, err := jsonl_processing_service.ProcessMultipleFiles(context.Background(), files, s3FileReader, 5)
 
 	if err != nil {
-		app.logger.Error("Error in processing json", err)
+		app.logger.Error("Error in processing json", slog.String("error", err.Error()))
 	}
 
 	app.logger.Info("Processing result", slog.Int("Processing Result Len", len(processing_result)))
@@ -95,7 +95,8 @@ func main() {
 }
 
 func openDB(config *appConfig) (*sql.DB, error) {
-	db, err := sql.Open("postgres", config.db.dns)
+	fmt.Println(config.db.dsn)
+	db, err := sql.Open("postgres", config.db.dsn)
 
 	if err != nil {
 		return nil, err
