@@ -1,0 +1,9 @@
+DROP INDEX IF EXISTS idx_processed_files_status;
+DROP INDEX IF EXISTS idx_processed_files_s3_path;
+DROP INDEX IF EXISTS idx_hotels_platform;
+DROP INDEX IF EXISTS idx_hotel_provider_ratings_hotel_id;
+DROP INDEX IF EXISTS idx_reviews_reviewer_country;
+DROP INDEX IF EXISTS idx_reviews_rating;
+DROP INDEX IF EXISTS idx_reviews_review_date;
+DROP INDEX IF EXISTS idx_reviews_provider_id;
+DROP INDEX IF EXISTS idx_reviews_hotel_id;

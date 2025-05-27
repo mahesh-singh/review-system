@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS hotel_provider_ratings;

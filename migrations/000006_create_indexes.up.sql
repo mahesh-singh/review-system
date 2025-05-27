@@ -1,0 +1,9 @@
+CREATE INDEX idx_reviews_hotel_id ON reviews(hotel_id);
+CREATE INDEX idx_reviews_provider_id ON reviews(provider_id);
+CREATE INDEX idx_reviews_review_date ON reviews(review_date);
+CREATE INDEX idx_reviews_rating ON reviews(rating);
+CREATE INDEX idx_reviews_reviewer_country ON reviews(reviewer_country_id);
+CREATE INDEX idx_hotel_provider_ratings_hotel_id ON hotel_provider_ratings(hotel_id);
+CREATE INDEX idx_hotels_platform ON hotels(platform);
+CREATE INDEX idx_processed_files_s3_path ON processed_files(s3path);
+CREATE INDEX idx_processed_files_status ON processed_files(status);

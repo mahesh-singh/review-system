@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS review_groups;
+DROP TABLE IF EXISTS countries;
+DROP TABLE IF EXISTS providers;
