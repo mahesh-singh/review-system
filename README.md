@@ -7,7 +7,7 @@
 ## Steps to Run
 1. Configure AWS 
    1. Using machine default aws profile 
-   2. modify .env file
+   2. modify .env file (copy example.env file as a .env)
       1. `BUCKET`
       2. `AWS_REGION`
       3. 
